@@ -1,0 +1,56 @@
+@import './Popup.css';
+
+/* Pause-specific styles */
+.pause-modal {
+  width: 600px;
+  padding-bottom: 10px;
+}
+
+.pause-content {
+  text-align: left;
+  color: var(--color-black);
+}
+
+.pause-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 30px;
+  align-items: center;
+}
+
+.pause-resume-button {
+  background-color: var(--color-red-primary);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 10px;
+  padding: 6px 40px 14px;
+  font-size: 2.5rem;
+  cursor: var(--cursor-pointer);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 0px var(--color-red-dark);
+  font-family: 'Darumadrop One', sans-serif;
+  font-weight: normal;
+}
+
+.pause-resume-button:hover {
+  transform: translateY(2px);
+  background-color: var(--color-red-dark);
+  box-shadow: 0 2px 0px var(--color-red-dark);
+}
+
+.pause-main-menu-button {
+  background-color: transparent;
+  color: var(--color-red-primary);
+  border: none;
+  padding: 12px 0 0;
+  font-size: 1.8rem;
+  cursor: var(--cursor-pointer);
+  transition: all 0.2s ease;
+  font-family: 'Darumadrop One', sans-serif;
+  font-weight: normal;
+}
+
+.pause-main-menu-button:hover {
+  color: var(--color-black);
+}

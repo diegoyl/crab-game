@@ -1,0 +1,93 @@
+@import './Popup.css';
+
+/* Additional about-specific styles */
+.about-content {
+  text-align: left;
+  color: var(--color-black);
+  font-weight: normal;
+}
+
+.about-content a {
+  color: var(--color-red-primary);
+  text-decoration: underline;
+  cursor: var(--cursor-pointer);
+}
+.about-content h3 {
+  margin: .2em 0 .6em;
+  margin: 0 0 8px;
+}
+.about-section-title {
+  color: var(--color-red-primary);
+  font-size: 1.7rem;
+  margin: 20px 0 15px 0;
+  font-weight: normal;
+}
+
+.about-paragraph {
+  font-size: 1.0rem;
+  line-height: 1.5;
+  margin: 0;
+  margin-bottom: 24px;
+  color: var(--color-black);
+}
+
+.email-link {
+  background: none;
+  border: none;
+  color: var(--color-red-primary);
+  font-family: inherit;
+  font-size: inherit;
+  cursor: var(--cursor-pointer);
+  text-decoration: underline;
+  padding: 0;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.email-link:hover {
+  color: var(--color-red-dark);
+}
+.about-version {
+  columns: var(--color-black);
+  opacity: 0.3;
+  font-size: 0.8em;
+  text-align: center;
+}
+.about-highlight {
+  color: var(--color-red-primary) !important;
+  margin-right: 8px;
+}
+
+.copied-notification {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-red-primary);
+  color: var(--color-cream);
+  padding: 6px 24px 12px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: normal;
+  z-index: 10001;
+  animation: fadeInOut 1s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}

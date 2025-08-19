@@ -1,0 +1,124 @@
+@import './Popup.css';
+
+/* Additional settings-specific styles */
+.sound-settings {
+  text-align: left;
+  color: var(--color-black);
+  /* Override global fixed positioning when inside popup */
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: inherit !important;
+  z-index: auto !important;
+}
+
+.sound-settings h3 {
+  color: var(--color-red-primary);
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sound-control {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sound-control label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 2.0rem;
+  color: var(--color-black);
+  min-width: 120px; /* Ensure consistent width for labels */
+  flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+.sound-control input[type="checkbox"] {
+  width: 40px;
+  height: 40px;
+  /* Custom styling for unchecked state */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 4px solid var(--color-red-primary);
+  border-radius: 8px;
+  background-color: var(--color-cream);
+  cursor: var(--cursor-pointer);
+  position: relative;
+  transition: all 0.2s ease;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.sound-control input[type="checkbox"]:checked {
+  background-color: var(--color-red-primary);
+  border-color: var(--color-red-primary);
+}
+
+.sound-control input[type="checkbox"]:checked::after {
+  content: '✔';
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-cream);
+  font-size: 30px;
+  line-height: 0.5;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+}
+
+.sound-control input[type="checkbox"]:hover {
+  border-color: var(--color-red-dark);
+  background-color: var(--color-red-dark);
+}
+
+.sound-control input[type="range"] {
+  flex: 1; /* Take up remaining space */
+  max-width: 60%; /* Limit to 60% of container width */
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(242, 35, 12, 0.2);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: var(--cursor-default);
+}
+
+/* Reduce opacity when sound control is disabled */
+.sound-control.disabled input[type="range"] {
+  opacity: 0.3;
+}
+
+.sound-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-red-primary);
+  cursor: var(--cursor-pointer);
+}
+
+.sound-control input[type="range"]::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-red-primary);
+  cursor: var(--cursor-pointer);
+}
+
+.sound-control input[type="range"]::-webkit-slider-track {
+  cursor: var(--cursor-default);
+}
+
+.sound-control input[type="range"]::-moz-range-track {
+  cursor: var(--cursor-default);
+}
