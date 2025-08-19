@@ -1,8 +1,8 @@
 # 🦀 Reji's Rave 🦀
 
-I made this game beacuse I wanted to try out react-three-fiber. I also wanted to finish a full game since the other games I have been working on are more complex and far from finished, so I tried keeping this one simpler, but I might return to it and add more features later.
-
 Reji is a crab who loves to rave! Help him collect shells while avoiding the tide (he's scared of water...). If you accumulate enough shells you can request the DJ to play Reji's favorite song.
+
+I made this game beacuse I wanted to try out react-three-fiber. I also wanted to finish a full game since the other games I have been working on are more complex and far from finished, so I tried keeping this one simpler, but I might return to it and add more features later.
 
 
 ## How to Play

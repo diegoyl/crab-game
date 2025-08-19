@@ -22,7 +22,7 @@ export function AboutPopup({ isOpen, onClose }: AboutPopupProps) {
           <div className="about-content">
             <h3 className="about-section-title">About Reji's Rave</h3>
             <p className="about-paragraph">
-              Reji is crab who loves to rave! Help him collect seashells so he can pay the DJ to play his favorite songs. But be careful because Reji is terrified of water and will pass out if he spends too much time in the ocean...
+              Reji is crab who loves to rave! Help him collect seashells so he can request the DJ to play his favorite song. But be careful because Reji is terrified of water and will pass out if he spends too much time in the ocean...
             </p>
                           <p className="about-paragraph">
                 I made this game after I started using threejs and wanted to try out react-three-fiber. I tried to keep the game pretty simple so I could finish it quickly, but I might add more features later. If you find any bugs or have any thoughts, let me know by emailing{' '}
@@ -42,7 +42,7 @@ export function AboutPopup({ isOpen, onClose }: AboutPopupProps) {
             <h3 className="about-section-title">Credits</h3>
             <p className="about-paragraph">
               <span className="about-highlight">Designer & Developer:</span> Diego Yañez-Laguna<br/>
-              <span className="about-highlight">Music:</span> Samba de Orfeu - Luiz Bonfa<br/>
+              <span className="about-highlight">Music:</span> Samba de Orfeu - Luiz Bonfa, Crab Rave - Noisestorm<br/>
               <span className="about-highlight">3D Models:</span> Poly Pizza 
               (<a href="https://poly.pizza/m/2DgM36qZW2u" target="_blank" rel="noopener noreferrer">Crab</a>, <a href="https://poly.pizza/m/5ovn4mnRejL" target="_blank" rel="noopener noreferrer">Shell</a>)<br/>
               <span className="about-highlight">Font:</span> Darumadrop One - Google Fonts<br/>
