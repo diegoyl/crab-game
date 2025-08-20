@@ -15,6 +15,8 @@ type GameState = {
   tidePhase: TidePhase;
   tideLevel: number; // 0..1 smooth tide amount
   gameStartTime: number | null; // When the game started (for tide calculations)
+  pauseStartTime: number | null; // When the game was paused (for calculating total pause time)
+  totalPauseTime: number; // Total time the game has been paused
   shells: Shell[];
   score: number;
   highScore: number;
@@ -28,16 +30,21 @@ type GameState = {
   setTide: (p: TidePhase) => void;
   setTideLevel: (v: number) => void;
   setGameStartTime: (time: number | null) => void;
+  setPauseStartTime: (time: number | null) => void;
+  setTotalPauseTime: (time: number) => void;
+  getEffectiveGameTime: () => number; // Get game time minus total pause time
   setShells: (shells: Shell[]) => void;
   markCollected: (id: number) => void;
   addScore: (v: number) => void;
   addShellsToTotal: () => void; // Add current score to total shells
-  useShellsForRave: () => boolean; // Use 50 shells for rave mode, returns success
+  subtractShellsForRave: () => Promise<void>; // Subtract 100 shells for rave mode with animation
+  useShellsForRave: () => boolean; // Use 100 shells for rave mode, returns success
   setHealth: (health: number) => void;
   setFlipped: (flipped: boolean) => void;
   setGamePhase: (phase: 'enter' | 'loading' | 'ready' | 'playing' | 'ending' | 'gameOver' | 'rave' | 'raveEnd') => void;
   setPaused: (paused: boolean) => void;
   setRaveMusicStartTime: (time: number | null) => void;
+  endRaveMode: () => void; // Properly end rave mode and stop music
   startLoading: () => void;
   finishLoading: () => void;
   startGame: () => void;
@@ -53,6 +60,8 @@ export const useGame = create<GameState>()(
       tidePhase: 'low',
       tideLevel: 0,
       gameStartTime: null,
+      pauseStartTime: null,
+      totalPauseTime: 0,
       shells: [],
       score: 0,
       highScore: 0,
@@ -66,6 +75,13 @@ export const useGame = create<GameState>()(
       setTide: (p) => set({ tidePhase: p }),
       setTideLevel: (v) => set({ tideLevel: v }),
       setGameStartTime: (time) => set({ gameStartTime: time }),
+      setPauseStartTime: (time) => set({ pauseStartTime: time }),
+      setTotalPauseTime: (time) => set({ totalPauseTime: time }),
+      getEffectiveGameTime: () => {
+        const { gameStartTime, totalPauseTime } = get();
+        if (!gameStartTime) return 0;
+        return (Date.now() - gameStartTime - totalPauseTime) / 1000;
+      },
       setShells: (shells) => set({ shells }),
       markCollected: (id) =>
         set((s) => ({ shells: s.shells.map((sh) => (sh.id === id ? { ...sh, collected: true } : sh)) })),
@@ -77,10 +93,29 @@ export const useGame = create<GameState>()(
         const currentScore = get().score;
         set((s) => ({ totalShells: s.totalShells + currentScore }));
       },
+      subtractShellsForRave: () => {
+        return new Promise<void>((resolve) => {
+          // This function now only provides a delay for animation timing
+          // The actual subtraction and animation is handled in the component
+          const animationDuration = 1000;
+          const steps = 30;
+          const stepDuration = animationDuration / steps;
+          
+          let stepCount = 0;
+          const interval = setInterval(() => {
+            stepCount++;
+            
+            if (stepCount >= steps) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, stepDuration);
+        });
+      },
       useShellsForRave: () => {
         const currentTotal = get().totalShells;
-        if (currentTotal >= 50) {
-          set({ totalShells: currentTotal - 50 });
+        if (currentTotal >= 100) {
+          set({ totalShells: currentTotal - 100 });
           return true; // Success
         }
         return false; // Not enough shells
@@ -88,13 +123,32 @@ export const useGame = create<GameState>()(
       setHealth: (health) => set({ health: Math.max(0, Math.min(1, health)) }),
       setFlipped: (flipped) => set({ isFlipped: flipped }),
       setGamePhase: (phase) => set({ gamePhase: phase }),
-      setPaused: (paused) => set({ isPaused: paused }),
+      setPaused: (paused) => {
+        const { pauseStartTime, totalPauseTime } = get();
+        if (paused) {
+          // Pausing: record the pause start time
+          set({ isPaused: paused, pauseStartTime: Date.now() });
+        } else {
+          // Resuming: calculate total pause time and update
+          if (pauseStartTime) {
+            const newPauseTime = totalPauseTime + (Date.now() - pauseStartTime);
+            set({ 
+              isPaused: paused, 
+              pauseStartTime: null, 
+              totalPauseTime: newPauseTime 
+            });
+          } else {
+            set({ isPaused: paused, pauseStartTime: null });
+          }
+        }
+      },
       setRaveMusicStartTime: (time) => set({ raveMusicStartTime: time }),
+      endRaveMode: () => set({ raveMusicStartTime: null, gamePhase: 'enter', isFlipped: false }),
       startLoading: () => set({ gamePhase: 'loading', crabPos: { x: 0, z: 20 }, isFlipped: true }),
       finishLoading: () => set({ gamePhase: 'ready' }),
       startGame: () => set({ gamePhase: 'playing', isFlipped: true, gameStartTime: Date.now() }),
-      resetRun: () => set({ score: 0, tidePhase: 'low', gameStartTime: null, crabPos: { x: 0, z: 34 }, health: 1, isFlipped: false, gamePhase: 'enter', isPaused: false, shells: get().shells.map(shell => ({ ...shell, collected: false })) }),
-      restartGame: () => set({ score: 0, tidePhase: 'low', gameStartTime: null, crabPos: { x: 0, z: 34 }, health: 1, isFlipped: true, gamePhase: 'ready', shells: get().shells.map(shell => ({ ...shell, collected: false })) }),
+      resetRun: () => set({ score: 0, tidePhase: 'low', gameStartTime: null, pauseStartTime: null, totalPauseTime: 0, crabPos: { x: 0, z: 34 }, health: 1, isFlipped: false, gamePhase: 'enter', isPaused: false, shells: get().shells.map(shell => ({ ...shell, collected: false })) }),
+      restartGame: () => set({ score: 0, tidePhase: 'low', gameStartTime: null, pauseStartTime: null, totalPauseTime: 0, crabPos: { x: 0, z: 34 }, health: 1, isFlipped: true, gamePhase: 'ready', shells: get().shells.map(shell => ({ ...shell, collected: false })) }),
       resetHighScore: () => set({ highScore: 0 }),
     }),
     {

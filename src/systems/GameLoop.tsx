@@ -4,6 +4,7 @@ import { useGame, Shell } from '../store/game';
 import seedrandom from 'seedrandom';
 
 const FIXED_STEP = 1 / 60;
+const TOTAL_SHELLS = 150;
 
 function seededRng(seed: string) {
   const rng = seedrandom(seed);
@@ -23,6 +24,7 @@ export function GameLoop() {
   const gameStartTime = useGame((s) => s.gameStartTime);
   const setGameStartTime = useGame((s) => s.setGameStartTime);
   const isPaused = useGame((s) => s.isPaused);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
 
   const rng = useRef<() => number>();
   const accumulator = useRef(0);
@@ -41,7 +43,7 @@ export function GameLoop() {
     const zMin = -20; // tide zone end (deep ocean)
     const zMax = 30;  // tide zone start (dry beach)
     const initial: Shell[] = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < TOTAL_SHELLS; i++) {
       const r = rng.current!();
       const biased = r * r; // quadratic bias toward 0
       const z = zMin + biased * (zMax - zMin);
@@ -90,7 +92,7 @@ export function GameLoop() {
     
                  // Check if game time is up - end at peak tide of last cycle
     if (gamePhase === 'playing' && gameStartTime !== null) {
-      const gameTime = (Date.now() - gameStartTime) / 1000; // seconds
+      const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
       const cycle = 10;
       const currentCycleIndex = Math.floor(gameTime / cycle);
       const cycleProgress = (gameTime % cycle) / cycle; // 0 to 1 within current cycle
@@ -113,7 +115,7 @@ export function GameLoop() {
     let effectiveLevel = 0.5; // Default value
     
          if ((gamePhase === 'playing' || gamePhase === 'ending' || gamePhase === 'rave') && gameStartTime !== null) {
-       const gameTime = (Date.now() - gameStartTime) / 1000;
+       const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
        const cycle = 10;
        const currentCycleIndex = Math.floor(gameTime / cycle);
        const cycleProgress = (gameTime % cycle) / cycle; // 0 to 1 within current cycle

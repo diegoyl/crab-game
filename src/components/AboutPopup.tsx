@@ -1,5 +1,6 @@
 import './AboutPopup.css';
 import { useState } from 'react';
+import { useClickSound } from '../hooks/useClickSound';
 
 interface AboutPopupProps {
   isOpen: boolean;
@@ -8,13 +9,14 @@ interface AboutPopupProps {
 
 export function AboutPopup({ isOpen, onClose }: AboutPopupProps) {
   const [showCopied, setShowCopied] = useState(false);
+  const { withClickSound } = useClickSound();
   
   if (!isOpen) return null;
 
   return (
-    <div className="popup-overlay" onClick={onClose}>
+    <div className="popup-overlay" onClick={withClickSound(onClose)}>
       <div className="popup-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="popup-close-button" onClick={onClose}>
+        <button className="popup-close-button" onClick={withClickSound(onClose)}>
           X
         </button>
         
@@ -28,11 +30,11 @@ export function AboutPopup({ isOpen, onClose }: AboutPopupProps) {
                 I made this game after I started using threejs and wanted to try out react-three-fiber. I tried to keep the game pretty simple so I could finish it quickly, but I might add more features later. If you find any bugs or have any thoughts, let me know by emailing{' '}
                 <button 
                   className="email-link"
-                  onClick={() => {
+                  onClick={withClickSound(() => {
                     navigator.clipboard.writeText('hi.diegoyl@gmail.com');
                     setShowCopied(true);
                     setTimeout(() => setShowCopied(false), 1000);
-                  }}
+                  })}
                   title="Click to copy email"
                 >
                   hi.diegoyl@gmail.com

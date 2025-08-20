@@ -6,6 +6,7 @@ import { ShellField } from '../things/ShellField';
 import { Tide } from '../things/Tide';
 import { HealthSystem } from '../things/HealthSystem';
 import { GameLoop } from '../systems/GameLoop';
+import { DustPuffs } from '../effects/DustPuffs';
 import { OrbitControls, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -186,7 +187,7 @@ export function BeachScene() {
       <ambientLight intensity={1.0} />
       <directionalLight
         position={[10, 33, 5]}
-        intensity={0.8}
+        intensity={1.0}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -208,6 +209,7 @@ export function BeachScene() {
       <ShellField />
       <Tide />
       <HealthSystem />
+      <DustPuffs />
       <CloudBackground />
       <StrobeLights />
       <OrbitControls makeDefault enablePan={false} enableZoom={false} enableRotate={false} minPolarAngle={-1.0} maxPolarAngle={1.5} />
@@ -224,6 +226,7 @@ function CameraFollowZ() {
   const crabPos = useGame((s) => s.crabPos);
   const gamePhase = useGame((s) => s.gamePhase);
   const gameStartTime = useGame((s) => s.gameStartTime);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
   const { camera, controls } = useThree() as any;
   
   // Track zoom animation state
@@ -326,7 +329,7 @@ function CameraFollowZ() {
         
         // Vertical bounce (Y position changes) - complete cycle every 0.48 seconds
         const bounceFrequency = (2 * Math.PI) / 0.48; // radians per second for 0.48s cycle
-        const bouncePulse = Math.sin(time * bounceFrequency) * pulseIntensity * 0.15;
+        const bouncePulse = Math.sin(time * bounceFrequency) * pulseIntensity * 0.2;
         
         // Zoom pulse (Z position changes) - bell curve with left-shifted peak and quadratic fade
         const cycleTime = (time * bounceFrequency) % (2 * Math.PI); // Get position in current cycle
@@ -343,10 +346,10 @@ function CameraFollowZ() {
           zapEffect = Math.pow(1 - fadeTime, 2);
         }
         
-        const zoomPulse = zapEffect * pulseIntensity * 5;
+        const zoomPulse = zapEffect * pulseIntensity * 10;
 
         // Apply pulsing to camera position
-        camera.position.set(0, baseY + bouncePulse, baseZ + zoomPulse);
+        camera.position.set(0, baseY + bouncePulse, baseZ - zoomPulse);
         camera.lookAt(0, 1 + bouncePulse * 2, 32); // Look at the rave area (Z=32)
       } else {
         // Fixed camera position during non-active sections
@@ -407,7 +410,7 @@ function CameraFollowZ() {
       // Calculate dynamic minimum Z bound based on current tide range
       const getMinZBound = () => {
         if (gamePhase === 'playing' && gameStartTime !== null) {
-          const gameTime = (Date.now() - gameStartTime) / 1000;
+          const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
           const cycle = 10;
           const currentCycleIndex = Math.floor(gameTime / cycle);
           

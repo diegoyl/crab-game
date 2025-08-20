@@ -106,7 +106,6 @@ export const ShellField = memo(function ShellField() {
 				if (gamePhase === 'playing') {
 					addScore(1); // Add 1 points for each shell collected
 					playSound('shellCollection').catch(console.error);
-					console.log(`Shell ${shell.id} collected! Score increased by 1.`);
 				}
 			}
 		});
@@ -114,7 +113,7 @@ export const ShellField = memo(function ShellField() {
 
 	return (
 		<>
-			<Instances limit={100} range={visibleShells.length}>
+			<Instances limit={150} range={visibleShells.length} frustumCulled={false}>
 				{/* Use the geometry/material from the GLB if available */}
 				{gltf?.scene ? (
 					<primitive object={(gltf.scene.children[0] as any)?.geometry || (gltf.scene as any)} attach="geometry" />
@@ -137,7 +136,7 @@ export const ShellField = memo(function ShellField() {
 					return (
 						<Instance
 							key={s.id}
-							position={[s.x, -0.001*scale, s.z]}
+							position={[s.x, -0.02*scale, s.z]}
 							rotation={[tilt, yaw, Math.PI / 2]}
 							scale={scale}
 						/>

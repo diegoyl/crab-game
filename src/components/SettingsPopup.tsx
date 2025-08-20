@@ -1,5 +1,6 @@
 import { SoundSettings } from '../sounds/SoundSettings';
 import './SettingsPopup.css';
+import { useClickSound } from '../hooks/useClickSound';
 
 interface SettingsPopupProps {
   isOpen: boolean;
@@ -7,12 +8,13 @@ interface SettingsPopupProps {
 }
 
 export function SettingsPopup({ isOpen, onClose }: SettingsPopupProps) {
+  const { withClickSound } = useClickSound();
   if (!isOpen) return null;
 
   return (
-    <div className="popup-overlay" onClick={onClose}>
+    <div className="popup-overlay" onClick={withClickSound(onClose)}>
       <div className="popup-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="popup-close-button" onClick={onClose}>
+        <button className="popup-close-button" onClick={withClickSound(onClose)}>
           X
         </button>
         

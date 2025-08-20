@@ -149,6 +149,7 @@ export function Tide() {
   const gamePhase = useGame((s) => s.gamePhase);
   const gameStartTime = useGame((s) => s.gameStartTime);
   const isPaused = useGame((s) => s.isPaused);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
   const boxesRef = useRef<THREE.Group>(null);
 
   // Configurable beach zones
@@ -247,7 +248,7 @@ export function Tide() {
     let tideRangeMin, tideRangeMax;
     
          if (gamePhase === 'playing' && gameStartTime !== null) {
-       const gameTime = (Date.now() - gameStartTime) / 1000;
+       const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
        const cycle = 10;
        const currentCycleIndex = Math.floor(gameTime / cycle);
       

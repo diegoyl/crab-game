@@ -12,7 +12,8 @@ export type SoundType =
   | 'drowning'
   | 'backgroundMusic'
   | 'raveMusic'
-  | 'yelling';
+  | 'yelling'
+  | 'uiClick';
 
 // Sound configuration
 export interface SoundConfig {
@@ -23,16 +24,17 @@ export interface SoundConfig {
 
 // Default sound configurations
 export const SOUND_CONFIGS: Record<SoundType, SoundConfig> = {
-  footstep: { volume: 0.9, loop: false, spatial: true },
+  footstep: { volume: 1.0, loop: false, spatial: true },
   wetFootstep: { volume: 0.8, loop: false, spatial: true },
-  shellCollection: { volume: 0.33, loop: false, spatial: false },
+  shellCollection: { volume: 0.3, loop: false, spatial: false },
   crabFlip: { volume: 0.6, loop: false, spatial: false },
   crabRevival: { volume: 0.7, loop: false, spatial: false },
   backgroundAmbient: { volume: 0.35, loop: true, spatial: false },
   drowning: { volume: 0.15, loop: true, spatial: false },
   backgroundMusic: { volume: 0.4, loop: true, spatial: false },
-  raveMusic: { volume: 0.5, loop: false, spatial: false },
+  raveMusic: { volume: 0.5, loop: true, spatial: false },
   yelling: { volume: 0.4, loop: false, spatial: false },
+  uiClick: { volume: 1.0, loop: false, spatial: false },
 };
 
 // Extended AudioBufferSourceNode with gain node reference
@@ -192,7 +194,6 @@ export const useSound = create<SoundState>()(
       return;
     }
 
-    console.log(`Playing sound: ${soundName} (${type})`);
 
     const source = audioContext.createBufferSource();
     const gainNode = audioContext.createGain();

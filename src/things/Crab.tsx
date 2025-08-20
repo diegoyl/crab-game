@@ -16,6 +16,7 @@ export function Crab() {
   const gameStartTime = useGame((s) => s.gameStartTime);
   const setGamePhase = useGame((s) => s.setGamePhase);
   const isPaused = useGame((s) => s.isPaused);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
   const { playFootstep, playSound } = useSoundEvents();
   const group = useRef<THREE.Group>(null);
   const { camera, mouse } = useThree();
@@ -82,6 +83,22 @@ export function Crab() {
       window.removeEventListener('touchstart', handleTouchStart);
     };
   }, []);
+  
+  // Reset rotation refs when transitioning from rave to enter phase
+  useEffect(() => {
+    if (gamePhase === 'enter') {
+      // Reset all rotation-related refs to their initial values
+      yawRef.current = 0;
+      flipAnimationRef.current = 0; // Upright position
+      animDirectionRef.current = 0; // No animation
+      wobbleTimeRef.current = 0;
+      
+      // Reset the group rotation directly
+      if (group.current) {
+        group.current.rotation.set(0, 0, 0);
+      }
+    }
+  }, [gamePhase]);
   
   // Ending animation state
   const endingAnimationRef = useRef<{
@@ -345,7 +362,7 @@ export function Crab() {
     // Handle flipped crab rescue logic
     if ((gamePhase === 'playing' || gamePhase === 'rave') && isFlipped) {
       // Only move crab during rising tide phase (progress 0.0 to 0.5)
-      const gameTime = (Date.now() - gameStartTime!) / 1000;
+      const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
       const cycle = 10;
       const cycleProgress = (gameTime % cycle) / cycle;
       
@@ -426,7 +443,7 @@ export function Crab() {
       // Calculate dynamic minimum Z bound based on current tide range
       const getMinZBound = () => {
         if ((gamePhase === 'playing' || gamePhase === 'rave') && gameStartTime !== null) {
-          const gameTime = (Date.now() - gameStartTime) / 1000;
+          const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
           const cycle = 10;
           const currentCycleIndex = Math.floor(gameTime / cycle);
           
@@ -597,29 +614,28 @@ export function Crab() {
       
       // Jump detection - check for significant mouse Y movement
       const currentMouseY = mouseYRef.current;
-      const jumpThreshold = -1001; // pixels
+      const jumpThreshold = 20; // pixels
       const lastMouseY = jumpAnimationRef.current.lastMouseY || currentMouseY;
       
-              const jumpHeightNorm = (lastMouseY - currentMouseY)
-        
-        // Map jumpHeightNorm from 0-400 to 0.5-5.0 and clamp
-        let mappedJumpHeight = Math.max(0.4, Math.min(4.0, 
-          (jumpHeightNorm / 100) * (4.0 - 0.4) + 0.4
-        ));
+      const jumpHeightNorm = (lastMouseY - currentMouseY)
+      
+      // Map jumpHeightNorm from 0-400 to 0.5-5.0 and clamp
+      let mappedJumpHeight = Math.max(0.4, Math.min(3.0, 
+        (jumpHeightNorm / 300) * (3.0 - 0.4) + 0.4
+      ));
 
-        if (mappedJumpHeight < 0.5) {
-          mappedJumpHeight += Math.random()*0.3;
-        }
-        
+      if (mappedJumpHeight < 0.5) {
+        mappedJumpHeight += Math.random()*0.3;
+      }
+      
         // Detect upward mouse movement
-        if (currentMouseY < lastMouseY - jumpThreshold && !jumpAnimationRef.current.isActive) {
-          // Start jump animation
-          jumpAnimationRef.current.isActive = true;
-          jumpAnimationRef.current.startTime = Date.now();
-          jumpAnimationRef.current.duration = 480; // 0.45 second jump
-          jumpAnimationRef.current.startY = 1.8; // Current Y position
-          jumpAnimationRef.current.peakY = 1.8 + mappedJumpHeight; // Dynamic peak jump height
-        console.log('Jump! = '+mappedJumpHeight);
+      if (Math.abs(lastMouseY - currentMouseY) > jumpThreshold && !jumpAnimationRef.current.isActive) {
+        // Start jump animation
+        jumpAnimationRef.current.isActive = true;
+        jumpAnimationRef.current.startTime = Date.now();
+        jumpAnimationRef.current.duration = 480; // 0.45 second jump
+        jumpAnimationRef.current.startY = 1.8; // Current Y position
+        jumpAnimationRef.current.peakY = 1.8 + mappedJumpHeight; // Dynamic peak jump height
       } 
       
       // Update last mouse Y position
@@ -682,11 +698,11 @@ export function Crab() {
       // Start the ending animation if not already active
       if (!ending.isActive) {
         // Calculate target rotation (facing towards target)
-        const targetRotation = Math.atan2(0 - crabPos.x, 46 - crabPos.z);
+        const targetRotation = Math.atan2(0 - crabPos.x, 44 - crabPos.z);
         
         ending.isActive = true;
         ending.startPos = { x: crabPos.x, z: crabPos.z };
-        ending.targetPos = { x: 0, z: 46 };
+        ending.targetPos = { x: 0, z: 44 };
         ending.startTime = Date.now();
         ending.targetRotation = targetRotation;
         

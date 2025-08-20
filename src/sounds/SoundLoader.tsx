@@ -9,6 +9,7 @@ const SOUND_FILES = {
   crabFlip: '/sounds/crab-flip.mp3',
   crabRevival: '/sounds/crab-revival.mp3',
   yelling: '/sounds/yelling.mp3',
+  uiClick: '/sounds/ui_click.mp3',
   
   // Looping sounds
   backgroundAmbient: '/sounds/background-ambient.mp3',

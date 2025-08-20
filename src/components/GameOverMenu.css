@@ -42,6 +42,19 @@ button {
   }
 }
 
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.game-over-modal.sliding-down {
+  animation: slideDown 0.6s ease-in;
+}
+
 .game-over-title {
   color: var(--color-red-primary);
   font-size: 6.8rem;
@@ -152,8 +165,8 @@ button {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-48%, -45%);
-  font-size: 1.6rem;
+  transform: translate(-48%, -42%);
+  font-size: 1.4rem;
   font-weight: normal;
   color: var(--color-cream);
 }
@@ -161,6 +174,17 @@ button {
 .big-button:hover {
   transform: translateY(2px);
   background-color: var(--color-red-dark);
+}
+
+.big-button:disabled {
+  opacity: 0.5;
+  cursor: var(--cursor-default);
+  transform: none;
+}
+
+.big-button:disabled:hover {
+  transform: none;
+  background-color: var(--color-red-primary);
 }
 
 .main-menu-button {
@@ -175,6 +199,15 @@ button {
 
 .main-menu-button:hover {
   color: var(--color-black);
+}
+
+.main-menu-button:disabled {
+  opacity: 0.5;
+  cursor: var(--cursor-default);
+}
+
+.main-menu-button:disabled:hover {
+  color: var(--color-red-primary);
 }
 
 @keyframes pulse {

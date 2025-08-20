@@ -6,6 +6,7 @@ import { useGame } from './store/game';
 import { SoundLoader } from './sounds/SoundLoader';
 import { SoundController } from './sounds/SoundController';
 import { AudioInitializer } from './sounds/AudioInitializer';
+import { useSoundEvents } from './sounds';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { GameOverMenu } from './components/GameOverMenu';
 import { RaveEndMenu } from './components/RaveEndMenu';
@@ -26,6 +27,8 @@ export function App() {
   const setPaused = useGame((s) => s.setPaused);
   const resetRun = useGame((s) => s.resetRun);
   const setGamePhase = useGame((s) => s.setGamePhase);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
+  const { stopSound } = useSoundEvents();
   
   // Debug log for game phase changes
   // const tidePhase = useGame((s) => s.tidePhase);
@@ -39,7 +42,7 @@ export function App() {
     }
     
     // Calculate current cycle and tide range
-    const gameTime = (Date.now() - gameStartTime) / 1000;
+    const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
     const cycle = 10;
     const currentCycleIndex = Math.floor(gameTime / cycle);
     let cycleProgress = (gameTime % cycle) / cycle; // 0 to 1 within current cycle
@@ -121,6 +124,10 @@ export function App() {
         <div className="main-menu-button-container rave-main-menu">
           <button
             onClick={() => {
+              // Stop rave music first
+              stopSound('raveMusic');
+              
+              // Reset game and go to main menu
               resetRun();
               setGamePhase('enter');
             }}

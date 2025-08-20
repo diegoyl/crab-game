@@ -2,6 +2,7 @@ import { useGame } from '../store/game';
 import { useState } from 'react';
 import { SettingsPopup } from './SettingsPopup';
 import { AboutPopup } from './AboutPopup';
+import { useClickSound } from '../hooks/useClickSound';
 
 export function LoadingOverlay() {
   const { gamePhase, startLoading, startGame } = useGame();
@@ -10,37 +11,43 @@ export function LoadingOverlay() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [hasShownEnterOverlay, setHasShownEnterOverlay] = useState(false);
+  
+  // Click sound hook
+  const { withClickSound } = useClickSound();
 
   // Don't show overlay if game is playing, game over, or rave
   if (gamePhase === 'playing' || gamePhase === 'gameOver' || gamePhase === 'rave') return null;
 
-  const handleEnterClick = () => {
+  const handleEnterClick = withClickSound(() => {
     setIsLoading(true);
-    setHasShownEnterOverlay(true);
     
-    // Wait 2 seconds for scene to load, then slide out
+    // Wait 8 seconds for scene to load, then slide out
     // Sound preloading happens automatically in background
     setTimeout(() => {
       setEnterMode(false);
-    }, 4000);
-  };
+      // Wait for slide-out animation to complete before hiding overlay
+      setTimeout(() => {
+        setHasShownEnterOverlay(true);
+      }, 800); // Match the CSS transition duration
+    }, 8000);
+  });
 
-  const handlePlayClick = () => {
+  const handlePlayClick = withClickSound(() => {
     // Transition to loading phase (sounds may already be preloaded)
     startLoading();
-  };
+  });
 
-  const handleStartClick = () => {
+  const handleStartClick = withClickSound(() => {
     startGame();
-  };
+  });
 
-  const handleSettingsClick = () => {
+  const handleSettingsClick = withClickSound(() => {
     setIsSettingsOpen(true);
-  };
+  });
 
-  const handleAboutClick = () => {
+  const handleAboutClick = withClickSound(() => {
     setIsAboutOpen(true);
-  };
+  });
 
   return (
     <div className="loading-overlay">
@@ -70,6 +77,13 @@ export function LoadingOverlay() {
           {/* Enter overlay - only show if we haven't shown it before */}
           {!hasShownEnterOverlay && (
             <div className={`enter-overlay ${!enterMode ? 'slide-out' : ''}`} onClick={handleEnterClick}>
+              {isLoading ? 
+                <p className='enter-instructions'>
+                  Reji is a crab who loves to rave! 
+                  Collect shells while avoiding the tide (Reji can't swim). 
+                  With enough shells you can request the DJ to play Reji's favorite song.
+                </p>
+              : <><p> </p></> }
               <div className={`enter-text ${isLoading ? 'loading-text' : ''}`}>
                 {isLoading ? 'Loading...' : 'Click anywhere to start'}
               </div>

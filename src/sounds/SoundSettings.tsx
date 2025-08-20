@@ -1,4 +1,5 @@
 import { useSound } from './index';
+import { useClickSound } from '../hooks/useClickSound';
 
 export function SoundSettings() {
   const { 
@@ -11,6 +12,15 @@ export function SoundSettings() {
     setMusicEnabled, 
     setSoundEffectsEnabled 
   } = useSound();
+  const { withClickSound } = useClickSound();
+
+  const handleMusicToggle = withClickSound(() => {
+    setMusicEnabled(!musicEnabled);
+  });
+
+  const handleSoundEffectsToggle = withClickSound(() => {
+    setSoundEffectsEnabled(!soundEffectsEnabled);
+  });
 
   return (
     <div className="sound-settings">
@@ -21,7 +31,7 @@ export function SoundSettings() {
           <input
             type="checkbox"
             checked={musicEnabled}
-            onChange={(e) => setMusicEnabled(e.target.checked)}
+            onChange={handleMusicToggle}
           />
           Music
         </label>
@@ -41,7 +51,7 @@ export function SoundSettings() {
           <input
             type="checkbox"
             checked={soundEffectsEnabled}
-            onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
+            onChange={handleSoundEffectsToggle}
           />
           Sound FX
         </label>

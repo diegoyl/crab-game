@@ -19,7 +19,7 @@ type Puff = {
 	intensity: number; // 0..1 used as instanceColor
 };
 
-const POOL_SIZE = 100;
+const POOL_SIZE = 5;
 
 export function DustPuffs() {
     const crabPos = useGame((s) => s.crabPos);
@@ -69,7 +69,7 @@ export function DustPuffs() {
 
 		// Spawn based on distance traveled and speed threshold
 		const SPEED_THRESHOLD = 1.5;
-		const STEP_DISTANCE = 2.0; // slower spawn cadence by distance
+		const STEP_DISTANCE = 1.2; // closer spawn cadence for more frequent puffs
 		if (speed > SPEED_THRESHOLD) {
 			distAccumRef.current += distance;
 			while (distAccumRef.current >= STEP_DISTANCE) {
@@ -95,7 +95,7 @@ export function DustPuffs() {
 		p.y = 0.08;
 		p.z = position.z + dir.z * backOffset + side.z * sideOffset;
 		p.age = 0;
-		p.life = 1.2 + Math.random() * 0.6; // longer-lived puffs
+		p.life = 0.7 + Math.random() * 0.4; // shorter-lived puffs
 		p.scaleStart = 0.1 + Math.random() * 0.1;
 		p.scaleEnd = 0.8 + Math.random() * 0.6;
 		p.spin = Math.random() * Math.PI * 2;
@@ -105,7 +105,7 @@ export function DustPuffs() {
 	}
 
 	const sandColor = useMemo(() => new THREE.Color(COLORS.SAND.BEACH), []);
-	const whiteColor = useMemo(() => new THREE.Color(COLORS.EFFECTS.DUST), []);
+	const whiteColor = useMemo(() => new THREE.Color(0xffffff), []); // Pure white for better visibility
 	const alphaTex = useMemo(() => {
 		const size = 128;
 		const canvas = document.createElement('canvas');
@@ -171,10 +171,10 @@ export function DustPuffs() {
 			<meshBasicMaterial
 				color={whiteColor}
 				transparent
-				opacity={0.35}
+				opacity={0.7}
 				alphaMap={alphaTex}
 				depthWrite={false}
-				depthTest={false}
+				depthTest={true}
 			/>
 			{puffsRef.current.map((p, idx) => {
 				if (!p.active) return null;

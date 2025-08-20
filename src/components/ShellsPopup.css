@@ -1,0 +1,19 @@
+.shells-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-red-primary);
+  color: var(--color-cream);
+  padding: 6px 24px 12px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: normal;
+  z-index: 10001;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.shells-notification.visible {
+  opacity: 1;
+}

@@ -10,7 +10,7 @@ I made this game beacuse I wanted to try out react-three-fiber. I also wanted to
 - **Movement**: Reji walks towards your mouse as it moves around
 - **Collect Shells**: Walk over shells to collect them
 - **Avoid Drowning**: Stay out of the water as the tide rises, if Reji loses all his health he passes out until the tide goes down
-- **Rave Mode**: Enter the rave by paying 50 shells
+- **Rave Mode**: Enter the rave by paying 100 shells
 
 ## Credits
 

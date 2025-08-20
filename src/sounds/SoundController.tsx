@@ -4,7 +4,7 @@ import { useGame } from '../store/game';
 import { useSound } from './index';
 
 export function SoundController() {
-  const { playSound, stopSound, fadeOutSound, debugSounds } = useSound();
+  const { playSound, stopSound, fadeOutSound } = useSound();
   const health = useGame((s) => s.health);
   const isFlipped = useGame((s) => s.isFlipped);
   const crabPos = useGame((s) => s.crabPos);
@@ -12,6 +12,7 @@ export function SoundController() {
   const gamePhase = useGame((s) => s.gamePhase);
   const setRaveMusicStartTime = useGame((s) => s.setRaveMusicStartTime);
   const setGamePhase = useGame((s) => s.setGamePhase);
+  const setCrabPos = useGame((s) => s.setCrabPos);
   
   // Track previous states to avoid unnecessary sound changes
   const prevHealthRef = useRef(health);
@@ -31,8 +32,6 @@ export function SoundController() {
   useEffect(() => {
     // Start background music and ambient sound when game starts
     if (!backgroundStartedRef.current && gamePhase === 'playing') {
-      console.log('Attempting to play background music and ambient sound...');
-      debugSounds(); // Debug what sounds are loaded
       playSound('backgroundMusic').catch(console.error);
       playSound('backgroundAmbient').catch(console.error);
       backgroundStartedRef.current = true;
@@ -40,12 +39,11 @@ export function SoundController() {
     
     // Stop background music and ambient sound when entering rave phase
     if (gamePhase === 'rave' && backgroundStartedRef.current) {
-      console.log('Stopping background music and ambient sound for rave phase...');
       stopSound('backgroundMusic');
       stopSound('backgroundAmbient');
       backgroundStartedRef.current = false;
     }
-  }, [playSound, stopSound, gamePhase, debugSounds]);
+  }, [playSound, stopSound, gamePhase]);
 
   // Handle rave music
   useEffect(() => {
@@ -53,13 +51,40 @@ export function SoundController() {
       console.log('Starting rave music...');
       raveMusicStartedRef.current = true;
       setRaveMusicStartTime(Date.now());
-      playSound('raveMusic', {
-        onEnded: () => {
-          console.log('Rave music ended, transitioning to rave end phase...');
-          raveMusicStartedRef.current = false;
-          setGamePhase('raveEnd');
-        }
-      }).catch(console.error);
+      
+      // Get the rave music duration from the loaded audio buffer
+      const { sounds } = useSound.getState();
+      const raveMusicBuffer = sounds.get('raveMusic');
+      let raveMusicDuration = 120; // Default fallback duration
+      
+      if (raveMusicBuffer && raveMusicBuffer instanceof AudioBuffer) {
+        raveMusicDuration = raveMusicBuffer.duration - 1; // Subtract 1 second to avoid loop overlap
+        console.log(`Rave music duration detected: ${raveMusicBuffer.duration.toFixed(2)}s, using: ${raveMusicDuration.toFixed(2)}s`);
+      } else {
+        console.warn('Rave music buffer not found, using default duration of 120s');
+      }
+      
+      // Start rave music (now looping)
+      playSound('raveMusic').catch(console.error);
+      
+      // Set timer to end rave phase after song duration
+      console.log(`Setting rave music timer for ${raveMusicDuration} seconds...`);
+      const raveEndTimer = setTimeout(() => {
+        console.log('Rave music duration reached, transitioning to rave end phase...');
+        raveMusicStartedRef.current = false;
+        stopSound('raveMusic');
+        setRaveMusicStartTime(null);
+        setGamePhase('raveEnd');
+        // Reset crab X position to 0 when rave ends
+        setCrabPos(0, crabPos.z);
+      }, raveMusicDuration * 1000);
+      
+      // Cleanup timer if component unmounts or rave phase ends early
+      return () => {
+        console.log('Clearing rave music timer due to effect cleanup...');
+        clearTimeout(raveEndTimer);
+      };
+      
     } else if (gamePhase !== 'rave' && gamePhase !== 'raveEnd' && raveMusicStartedRef.current) {
       // Stop rave music when leaving rave phase (but not when transitioning to raveEnd)
       console.log('Stopping rave music...');
@@ -67,15 +92,13 @@ export function SoundController() {
       setRaveMusicStartTime(null);
       raveMusicStartedRef.current = false;
     }
-  }, [gamePhase, playSound, stopSound, setRaveMusicStartTime, setGamePhase]);
+  }, [gamePhase, playSound, stopSound, setRaveMusicStartTime, setGamePhase, setCrabPos]);
 
   useEffect(() => {
     // Handle drowning sound when health reaches 0 (match flip threshold)
     const isDrowning = health <= 0.01;
     
     if (isDrowning && !drowningStartedRef.current && gamePhase === 'playing') {
-      console.log('Attempting to play drowning sound...');
-      debugSounds(); // Debug what sounds are loaded
       playSound('drowning').catch(console.error);
       drowningStartedRef.current = true;
     } else if (!isDrowning && drowningStartedRef.current) {
@@ -83,12 +106,19 @@ export function SoundController() {
       fadeOutSound('drowning', 1.0);
       drowningStartedRef.current = false;
     }
-  }, [health, playSound, stopSound, fadeOutSound, gamePhase, debugSounds]);
+  }, [health, playSound, stopSound, fadeOutSound, gamePhase]);
 
   // Stop drowning sound when game ends
   useEffect(() => {
     if ((gamePhase === 'gameOver' || gamePhase === 'ending') && drowningStartedRef.current) {
       console.log('Stopping drowning sound due to game end...');
+      stopSound('drowning');
+      drowningStartedRef.current = false;
+    }
+    
+    // Also stop drowning sound when transitioning to any non-playing phase
+    if (gamePhase !== 'playing' && drowningStartedRef.current) {
+      console.log(`Stopping drowning sound due to phase change to: ${gamePhase}`);
       stopSound('drowning');
       drowningStartedRef.current = false;
     }

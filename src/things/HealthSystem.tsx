@@ -15,6 +15,7 @@ export function HealthSystem() {
   const gamePhase = useGame((s) => s.gamePhase);
   const gameStartTime = useGame((s) => s.gameStartTime);
   const isPaused = useGame((s) => s.isPaused);
+  const getEffectiveGameTime = useGame((s) => s.getEffectiveGameTime);
 
   // Ocean box parameters (matching Tide.tsx)
   const TOTAL_BOXES = 52;
@@ -36,16 +37,14 @@ export function HealthSystem() {
       return;
     }
     
-    console.log(`Health: ${health.toFixed(3)}, isFlipped: ${isFlipped}`); // Debug
+    // console.log(`Health: ${health.toFixed(3)}, isFlipped: ${isFlipped}`); // Debug
     
     // Flip when health reaches 0 (or very close to 0)
     if (health <= 0.01 && !isFlipped) {
-      console.log('\t\t2crotFLIPPING CRAB!'); // Debug
       setFlipped(true);
     }
     // Unflip when health reaches 10%
     else if (health >= 0.05 && isFlipped) {
-      console.log('\t\t2crotUNFLIPPING CRAB!'); // Debug
       setFlipped(false);
     }
   }, [health, isFlipped, setFlipped, gamePhase]);
@@ -56,7 +55,7 @@ export function HealthSystem() {
     let tideRangeMin, tideRangeMax;
     
     if ((gamePhase === 'playing' || gamePhase === 'rave') && gameStartTime !== null) {
-      const gameTime = (Date.now() - gameStartTime) / 1000;
+      const gameTime = getEffectiveGameTime(); // Use effective game time (minus pause time)
       const cycle = 10;
       const currentCycleIndex = Math.floor(gameTime / cycle);
       

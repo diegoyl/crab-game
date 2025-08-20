@@ -2,6 +2,8 @@ import { useGame } from '../store/game';
 import { COLORS } from '../constants/colors';
 import './GameOverMenu.css';
 import { useEffect, useState } from 'react';
+import { ShellsPopup } from './ShellsPopup';
+import { useClickSound } from '../hooks/useClickSound';
 
 export function GameOverMenu() {
   const score = useGame((s) => s.score);
@@ -10,14 +12,30 @@ export function GameOverMenu() {
   const resetRun = useGame((s) => s.resetRun);
   const setGamePhase = useGame((s) => s.setGamePhase);
   const addShellsToTotal = useGame((s) => s.addShellsToTotal);
+  const subtractShellsForRave = useGame((s) => s.subtractShellsForRave);
   const useShellsForRave = useGame((s) => s.useShellsForRave);
 
   // Animation state for total shells counter
   const [animatedTotalShells, setAnimatedTotalShells] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Transition state
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isSlidingDown, setIsSlidingDown] = useState(false);
+  
+  // Shells popup state
+  const [showShellsPopup, setShowShellsPopup] = useState(false);
+  
+  // Click sound hook
+  const { withClickSound } = useClickSound();
 
   // Start animation when component mounts
   useEffect(() => {
+    // Don't trigger add animation during rave transition
+    if (isTransitioning) {
+      return;
+    }
+    
     const oldTotal = totalShells - score; // Calculate old total before adding current score
     const newTotal = totalShells;
     
@@ -52,37 +70,83 @@ export function GameOverMenu() {
     } else {
       setAnimatedTotalShells(totalShells);
     }
-  }, [totalShells, score]);
+  }, [totalShells, score, isTransitioning]);
 
-  const handlePlayAgain = () => {
-    // Use restartGame to skip loading phase and go directly to ready
+  const handlePlayAgain = withClickSound(() => {
+    // Reset score and go through loading phase for a fresh start
     const restartGame = useGame.getState().restartGame;
     restartGame();
-  };
+  });
 
-  const handleMainMenu = () => {
+  const handleMainMenu = withClickSound(() => {
     resetRun();
     setGamePhase('enter');
-  };
+  });
 
-  const handleRave = () => {
-    const success = useShellsForRave();
-    if (success) {
-      console.log('Rave mode activated! 50 shells spent.');
-      console.log('Setting game phase to rave...');
-      // Transition to rave phase
-      setGamePhase('rave');
-      console.log('Game phase set to rave!');
-    } else {
-      console.log('Not enough shells for rave mode!');
+  const handleRave = withClickSound(async () => {
+    if (totalShells < 100) {
+      setShowShellsPopup(true);
+      return;
     }
-  };
+
+    // Start transition sequence
+    setIsTransitioning(true);
+    
+    try {
+      // Step 1: Animate shell subtraction locally
+      const oldTotal = totalShells;
+      const newTotal = totalShells - 100;
+      
+      // Start the subtract animation
+      setAnimatedTotalShells(oldTotal);
+      setIsAnimating(true);
+      
+      const animationDuration = 1000; // 1 second
+      const steps = 30;
+      const stepDuration = animationDuration / steps;
+      
+      let stepCount = 0;
+      const interval = setInterval(() => {
+        stepCount++;
+        const progress = stepCount / steps;
+        const currentValue = Math.round(oldTotal - (100 * progress));
+        setAnimatedTotalShells(currentValue);
+        
+        if (stepCount >= steps) {
+          clearInterval(interval);
+          setIsAnimating(false);
+        }
+      }, stepDuration);
+      
+      // Actually subtract the shells immediately
+      useShellsForRave();
+      
+      // Wait for animation to complete
+      await subtractShellsForRave();
+      
+      // Step 2: Wait 0.5 seconds after subtraction animation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Step 3: Start menu slide down animation
+      setIsSlidingDown(true);
+      
+      // Step 4: Wait for slide animation to complete (0.6s)
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      // Step 5: Transition to rave phase
+      setGamePhase('rave');
+      
+    } catch (error) {
+      setIsTransitioning(false);
+      setIsSlidingDown(false);
+    }
+  });
 
   const isNewHighScore = score >= highScore && score > 0;
 
   return (
     <div className="game-over-overlay">
-      <div className="game-over-modal">
+      <div className={`game-over-modal ${isSlidingDown ? 'sliding-down' : ''}`}>
         <h1 className="game-over-title">
           GAME OVER!
         </h1>
@@ -126,6 +190,7 @@ export function GameOverMenu() {
           <button
             onClick={handlePlayAgain}
             className="big-button"
+            disabled={isTransitioning}
           >
             Play Again
           </button>
@@ -133,12 +198,12 @@ export function GameOverMenu() {
           <button
             onClick={handleRave}
             className="big-button"
-            disabled={totalShells < 50}
+            disabled={totalShells < 100 || isTransitioning}
           >
             <span className="rave-text">Rave</span>
             <div className="shell-icon-container">
               <img src="/shell-icon.png" alt="Shell" className="shell-icon" />
-              <span className="shell-text">50</span>
+              <span className="shell-text">100</span>
             </div>
           </button>
         </div>
@@ -147,11 +212,18 @@ export function GameOverMenu() {
           <button
             onClick={handleMainMenu}
             className="main-menu-button"
+            disabled={isTransitioning}
           >
             ← Main Menu
           </button>
         </div>
       </div>
+      
+      <ShellsPopup 
+        totalShells={totalShells}
+        isVisible={showShellsPopup}
+        onHide={() => setShowShellsPopup(false)}
+      />
     </div>
   );
 }

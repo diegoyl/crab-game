@@ -24,7 +24,7 @@ const COLORS_RGB = {
     WATER_GLOW: 'rgb(64, 164, 223)', // Water effect on crab
     FLIPPED_GLOW: 'rgb(0, 81, 255)', // Red glow when flipped
     DISABLED_GLOW: 'rgb(13, 255, 0)', // Gray glow when disabled
-    DUST: 'rgb(250, 250, 243)', // dust puff initial color
+    DUST: 'rgb(255, 255, 251)', // dust puff initial color
   },
   DECORATIVE: {
     FLAG_POLE: 'rgb(139, 69, 19)',   // Flag pole
