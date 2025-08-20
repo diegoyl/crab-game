@@ -17,6 +17,9 @@ html, body, #root {
   margin: 0;
   font-family: 'Darumadrop One', sans-serif;
   cursor: var(--cursor-default);
+  /* Improve touch handling on mobile devices */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app-root {
@@ -221,6 +224,9 @@ html, body, #root {
   width: 100%;
   height: 100%;
   cursor: var(--cursor-pointer);
+  /* Ensure touch events work properly on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .enter-background {
@@ -396,6 +402,9 @@ html, body, #root {
   color: var(--color-red-primary);
   margin-top: 1em;
   border: none;
+  /* Ensure touch events work properly on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .play-button {
@@ -427,6 +436,9 @@ html, body, #root {
   z-index: 2000;
   cursor: var(--cursor-default);
   transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Ensure touch events work properly on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .enter-overlay.slide-out {

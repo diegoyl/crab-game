@@ -51,7 +51,8 @@ export function Crab() {
 
     const handleTouchMove = (event: TouchEvent) => {
       // Only prevent default if we're in a game phase that needs movement
-      if (gamePhase === 'enter' || gamePhase === 'playing' || gamePhase === 'rave') {
+      // Don't prevent default during 'enter' phase to allow overlay interactions
+      if (gamePhase === 'playing' || gamePhase === 'rave') {
         event.preventDefault(); // Prevent scrolling during gameplay
       }
       const touch = event.touches[0];
@@ -63,7 +64,8 @@ export function Crab() {
 
     const handleTouchStart = (event: TouchEvent) => {
       // Only prevent default if we're in a game phase that needs movement
-      if (gamePhase === 'enter' || gamePhase === 'playing' || gamePhase === 'rave') {
+      // Don't prevent default during 'enter' phase to allow overlay clicks
+      if (gamePhase === 'playing' || gamePhase === 'rave') {
         event.preventDefault(); // Prevent scrolling during gameplay
       }
       const touch = event.touches[0];

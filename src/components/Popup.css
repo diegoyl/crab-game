@@ -12,6 +12,9 @@
   font-family: 'Darumadrop One', sans-serif;
   pointer-events: auto;
   animation: fadeIn 0.3s ease-out;
+  /* Ensure touch events work properly on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .popup-modal {
@@ -45,6 +48,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  /* Ensure touch events work properly on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .popup-close-button:hover {
