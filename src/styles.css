@@ -464,4 +464,199 @@ html, body, #root {
   }
 }
 
+/* Force landscape orientation on mobile - only apply when mobile class is present */
+.mobile-device.portrait-mode {
+  html, body, #root {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  
+  .app-root {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+  }
+  
+  /* Adjust UI elements for rotated landscape */
+  .loading-overlay,
+  .fullscreen-prompt,
+  .popup-overlay {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+  }
+  
+  /* Adjust menu buttons for landscape */
+  .main-menu-buttons {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  
+  .menu-button {
+    font-size: 2.5rem;
+  }
+  
+  .play-button {
+    font-size: 7rem !important;
+  }
+  
+  /* Adjust title for landscape */
+  .main-title {
+    font-size: 12vw;
+    top: 7vw;
+  }
+}
+
+/* Handle safe areas for notched devices */
+@supports (padding: max(0px)) {
+  html, body, #root {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Fullscreen Components */
+.fullscreen-prompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fullscreen-prompt-content {
+  background: var(--color-cream);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 8px solid var(--color-red-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-prompt-content h3 {
+  color: var(--color-red-primary);
+  font-size: 1.5rem;
+  margin: 0 0 15px 0;
+}
+
+.fullscreen-prompt-content p {
+  color: var(--color-black);
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+}
+
+.fullscreen-prompt-content ul {
+  text-align: left;
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+}
+
+.fullscreen-prompt-content li {
+  color: var(--color-black);
+  font-size: 1rem;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.fullscreen-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fullscreen-button {
+  font-family: 'Darumadrop One', sans-serif;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: var(--cursor-pointer);
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fullscreen-button.primary {
+  background: var(--color-red-primary);
+  color: var(--color-cream);
+}
+
+.fullscreen-button.primary:hover {
+  background: var(--color-red-dark);
+  transform: scale(1.05);
+}
+
+.fullscreen-button.secondary {
+  background: transparent;
+  color: var(--color-red-primary);
+  border: 2px solid var(--color-red-primary);
+}
+
+.fullscreen-button.secondary:hover {
+  background: var(--color-red-primary);
+  color: var(--color-cream);
+}
+
+.fullscreen-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid var(--color-red-primary);
+  background: var(--color-cream);
+  color: var(--color-red-primary);
+  font-size: 1.5rem;
+  cursor: var(--cursor-pointer);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fullscreen-toggle:hover {
+  transform: scale(1.1);
+  background: var(--color-red-primary);
+  color: var(--color-cream);
+}
+
+.fullscreen-toggle.exit {
+  background: var(--color-red-primary);
+  color: var(--color-cream);
+}
+
+.fullscreen-toggle.exit:hover {
+  background: var(--color-red-dark);
+}
+
+/* Hide fullscreen toggle on desktop */
+@media (min-width: 769px) {
+  .fullscreen-toggle {
+    display: none;
+  }
+}
+
 

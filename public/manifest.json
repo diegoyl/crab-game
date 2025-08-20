@@ -1,0 +1,24 @@
+{
+  "name": "Reji's Rave",
+  "short_name": "Reji's Rave",
+  "description": "A crab's rave adventure - collect shells and avoid the tide!",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "theme_color": "#F3230C",
+  "background_color": "#9de1ff",
+  "icons": [
+    {
+      "src": "/crab_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/crab_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

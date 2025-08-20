@@ -13,6 +13,7 @@ import { RaveEndMenu } from './components/RaveEndMenu';
 import { CursorManager } from './components/CursorManager';
 import { PauseButton } from './components/PauseButton';
 import { PausePopup } from './components/PausePopup';
+import { FullscreenManager } from './components/FullscreenManager';
 import { useEffect, useRef } from 'react';
 
 export function App() {
@@ -105,6 +106,7 @@ export function App() {
       <AudioInitializer />
       <CursorManager />
       <LoadingOverlay />
+      <FullscreenManager />
       {gamePhase === 'gameOver' && <GameOverMenu />}
       {gamePhase === 'raveEnd' && <RaveEndMenu />}
       
