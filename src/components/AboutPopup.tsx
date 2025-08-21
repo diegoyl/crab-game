@@ -27,7 +27,7 @@ export function AboutPopup({ isOpen, onClose }: AboutPopupProps) {
               Reji is crab who loves to rave! Help him collect seashells so he can request the DJ to play his favorite song. But be careful because Reji is terrified of water and will pass out if he spends too much time in the ocean...
             </p>
                           <p className="about-paragraph">
-                I made this game after I started using threejs and wanted to try out react-three-fiber. I tried to keep the game pretty simple so I could finish it quickly, but I might add more features later. If you find any bugs or have any thoughts, let me know by emailing{' '}
+                I made this game after I started using threejs and wanted to try out react-three-fiber. I kept the gameplay pretty simple for now, but I might add more features later (levels, powerups, obstacles). If you find any bugs or have any thoughts, let me know by emailing{' '}
                 <button 
                   className="email-link"
                   onClick={withClickSound(() => {
