@@ -34,7 +34,7 @@ export const ShellField = memo(function ShellField() {
 		return x - Math.floor(x);
 	};
 
-	function GlowMaterial({ baseOpacity, phase }: { baseOpacity: number; phase: number }) {
+	function GlowMaterial({ baseOpacity, phase, gamePhase }: { baseOpacity: number; phase: number; gamePhase: string }) {
 		const ref = useRef<THREE.ShaderMaterial>(null);
 		const uniforms = useMemo(
 			() => ({
@@ -51,8 +51,8 @@ export const ShellField = memo(function ShellField() {
 			<shaderMaterial
 				ref={ref}
 				transparent
-				depthWrite={false}
-				depthTest={false}
+				depthWrite={gamePhase === 'rave'}
+				depthTest={gamePhase === 'rave'}
 				blending={THREE.AdditiveBlending}
 				vertexShader={`
 					varying vec2 vUv;
@@ -144,6 +144,12 @@ export const ShellField = memo(function ShellField() {
 				})}
 			</Instances>
 			{/* Soft additive glow billboard per shell */}
+			{/* 
+				Shell glow depth behavior:
+				- During rave phase: depthWrite=true, depthTest=true - glow is occluded by crab
+				- During other phases: depthWrite=false, depthTest=false - glow appears on top of everything
+				This allows the crab to block the glow during rave while maintaining visibility in other phases.
+			*/}
 			{visibleShells.map((s) => {
 				const rScale = randFromId(s.id, 1);
 				const glowScale = 2.8 + rScale * 0.3;
@@ -152,11 +158,36 @@ export const ShellField = memo(function ShellField() {
 					<Billboard key={`g-${s.id}`} position={[s.x, 0.16, s.z]}>
 						<mesh scale={[glowScale, glowScale * 0.5, 1]} renderOrder={1000}>
 							<planeGeometry args={[0.9, 0.9]} />
-							<GlowMaterial baseOpacity={0.25} phase={rPhase} />
+							<GlowMaterial baseOpacity={0.25} phase={rPhase} gamePhase={gamePhase} />
 						</mesh>
 					</Billboard>
 				);
 			})}
+
+			{/* 
+				ALTERNATIVE APPROACHES (commented out for reference):
+				
+				// Alternative 1: Conditional rendering (previous approach)
+				{gamePhase !== 'rave' && visibleShells.map((s) => {
+					// ... glow rendering code
+				})}
+
+				// Alternative 2: Changing opacity via uniforms
+				{visibleShells.map((s) => {
+					const rScale = randFromId(s.id, 1);
+					const glowScale = 2.8 + rScale * 0.3;
+					const rPhase = randFromId(s.id, 2) * Math.PI * 2;
+					const raveOpacity = gamePhase === 'rave' ? 0 : 0.25;
+					return (
+						<Billboard key={`g-${s.id}`} position={[s.x, 0.16, s.z]}>
+							<mesh scale={[glowScale, glowScale * 0.5, 1]} renderOrder={1000}>
+								<planeGeometry args={[0.9, 0.9]} />
+								<GlowMaterial baseOpacity={raveOpacity} phase={rPhase} gamePhase={gamePhase} />
+							</mesh>
+						</Billboard>
+					);
+				})}
+			*/}
 		</>
 	);
 });

@@ -442,7 +442,7 @@ function CameraFollowZ() {
     
     // Y-axis rotation to follow crab side-to-side
     const maxRotationAngle = Math.PI / 6; // 30 degrees max rotation
-    const rotationSensitivity = 0.3; // How much the crab's X position affects rotation
+    const rotationSensitivity = 3.2; // How much the crab's X position affects rotation
     const targetRotationY = THREE.MathUtils.clamp(
       crabPos.x * rotationSensitivity * (Math.PI / 180), // Convert to radians
       -maxRotationAngle,
@@ -457,7 +457,7 @@ function CameraFollowZ() {
       const targetY = 0.4; // Crab level
       
       controls.target.z = THREE.MathUtils.lerp(controls.target.z, crabPos.z, lerpAlpha);
-      controls.target.x = THREE.MathUtils.lerp(controls.target.x, crabPos.x * 0.1, lerpAlpha); // Slight X following for target
+      controls.target.x = THREE.MathUtils.lerp(controls.target.x, crabPos.x * 0.13, lerpAlpha); // Slight X following for target
       controls.target.y = THREE.MathUtils.lerp(controls.target.y, targetY, lerpAlpha);
       controls.update?.();
     }

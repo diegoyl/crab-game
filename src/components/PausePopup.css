@@ -31,6 +31,7 @@
   box-shadow: 0 4px 0px var(--color-red-dark);
   font-family: 'Darumadrop One', sans-serif;
   font-weight: normal;
+  margin-bottom: .2em;
 }
 
 .pause-resume-button:hover {
@@ -43,7 +44,7 @@
   background-color: transparent;
   color: var(--color-red-primary);
   border: none;
-  padding: 12px 0 0;
+  padding: 0;
   font-size: 1.8rem;
   cursor: var(--cursor-pointer);
   transition: all 0.2s ease;
@@ -53,4 +54,13 @@
 
 .pause-main-menu-button:hover {
   color: var(--color-black);
+}
+
+
+.restart-icon {
+  fill: var(--color-red-primary);
+  transition: all 0.2s ease;
+}
+.pause-main-menu-button:hover .restart-icon {
+  fill: var(--color-black);
 }

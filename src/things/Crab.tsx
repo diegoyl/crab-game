@@ -380,7 +380,7 @@ export function Crab() {
       if (adjustedCycleProgress < 0.51) {
 
         // Rising tide phase - slowly move crab toward shore
-        const rescueSpeed = 5.0; // units per second
+        const rescueSpeed = 9.0; // units per second
         const newZ = crabPos.z + rescueSpeed * delta; // Move toward shore, but stay 2 units above current min
         setCrabPos(crabPos.x, newZ);
       }
